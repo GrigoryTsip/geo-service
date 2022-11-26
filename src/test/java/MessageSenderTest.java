@@ -11,12 +11,8 @@ import ru.netology.i18n.LocalizationServiceImpl;
 import ru.netology.sender.MessageSender;
 import ru.netology.sender.MessageSenderImpl;
 
-import static ru.netology.sender.MessageSenderImpl.*;
-
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -36,15 +32,19 @@ public class MessageSenderTest {
     public void messageSenderTest(String ipaddr, String mssg) {
         System.out.println("Тестируем класс MessageSenderImpl ===================");
 
-        Location loc = new Location("Moscow", Country.RUSSIA, null, 0);
+        Location loc;
 
         GeoService geoService = Mockito.mock(GeoService.class);
-        Mockito.when(geoService.byIp(ipaddr))
-                .thenReturn(loc);
+        Mockito.when(geoService.byIp("172."))
+                .thenReturn(loc = new Location("Moscow", Country.RUSSIA, null, 0));
+        Mockito.when(geoService.byIp("96."))
+                .thenReturn(loc = new Location("New York", Country.USA, null, 0));
 
         LocalizationService localizationService = Mockito.mock(LocalizationService.class);
-        Mockito.when(localizationService.locale(loc.getCountry()))
-                .thenReturn(mssg);
+        Mockito.when(localizationService.locale(Country.RUSSIA))
+                .thenReturn("Добро пожаловать");
+        Mockito.when(localizationService.locale(Country.USA))
+                .thenReturn("Welcome");
 
         MessageSender sender = new MessageSenderImpl(geoService, localizationService);
 
